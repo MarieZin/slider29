@@ -1,0 +1,14 @@
+
+.red {
+    padding-top: 30px;
+    height: 100px;  
+}
+
+span {
+    display: inline-block;
+    font-size: 50px;
+}
+
+.headt {
+    vertical-align: super;
+}

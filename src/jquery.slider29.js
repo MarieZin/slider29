@@ -1,13 +1,15 @@
-export function slider29(type){
+export function slider29(orientation, type){
     let slider = $(".slider29");
     let sliderLine = createLine(slider);
-    let sliderThumb = $(createThumb(sliderLine, type));
+    let sliderThumb = $(createThumb(sliderLine, orientation, type));
     let sliderInput = createValueInput(slider)
     let min = 50;
     let max = 1000;
     let stepSize = 50;
+    let stepCount = (max - min) / stepSize;
 
-    if(type === 'vertical') {
+
+    if(orientation === 'vertical') {
         sliderLine.addClass('slider29--vertical');
     }
 
@@ -19,10 +21,10 @@ export function slider29(type){
     }
 
     // cоздадим кнопку ползунка
-    function createThumb(sliderLine, typeSlider){
+    function createThumb(sliderLine, orientation, type){
         let thumb = $('<span>');
-        thumb.addClass(typeSlider === 'vertical' ? 'slider29__thumb slider29__thumb--vertical' : 'slider29__thumb')
-        sliderLine.append(thumb)
+        thumb.addClass(orientation === 'vertical' ? 'slider29__thumb slider29__thumb--vertical' : 'slider29__thumb')
+        sliderLine.append(thumb);     
         return thumb;
     }
 
@@ -37,43 +39,52 @@ export function slider29(type){
 
     sliderInput.val(min);
 
-    sliderThumb.on("mousedown", function (event){
-        let sliderLineCoords = getCoords(sliderLine);
-        let sliderThumbCoords = getCoords(sliderThumb);
-
-        // разница в пикселя между координатой начала ползунка и координатой клика
+    //функция рассчитывает разницу в пикселя между координатой начала ползунка и координатой клика
+    function differenceClickAndStartThumb(event, sliderThumbCoords, orientation){
         let shiftClick;
-        if(type === 'horizontal') {
+        if(orientation === 'horizontal') {
             shiftClick = event.pageX - sliderThumbCoords.left;
         }
 
-        if(type === 'vertical') {
+        if(orientation === 'vertical') {
             shiftClick = event.pageY - sliderThumbCoords.top;
         }
+        return shiftClick;
+    }
 
-        $(document).on("mousemove", function (event) {
-            let precentStartThumb;
+    //функция рассчитывает и возвращает на скольких процентах от ширины линии находится ползунок
+    function coordsThumbPrecent(event, shiftClick, sliderLineCoords){
+        let precentStartThumb;
 
-            if(type === 'horizontal') {
-                precentStartThumb = ((event.pageX - shiftClick - sliderLineCoords.left) / sliderLineCoords.width) * 100;
-            }
-            if(type === 'vertical') {
-                precentStartThumb = ((event.pageY - shiftClick - sliderLineCoords.top) / (sliderLineCoords.height)) * 100;
-            }
-            if (precentStartThumb < 0) precentStartThumb = 0;
-            if (precentStartThumb > 100) precentStartThumb = 100;
+        if(orientation === 'horizontal') {
+            precentStartThumb = ((event.pageX - shiftClick - sliderLineCoords.left) / sliderLineCoords.width) * 100;
+        }
+        if(orientation === 'vertical') {
+            precentStartThumb = ((event.pageY - shiftClick - sliderLineCoords.top) / (sliderLineCoords.height)) * 100;
+        }
+        if (precentStartThumb < 0) precentStartThumb = 0;
+        if (precentStartThumb > 100) precentStartThumb = 100;
 
-            //Шаг слайдера
-            //сколько шагов влезет в заданный диапазон учитывая размер шага
-            let stepCount = (max - min) / stepSize;
+        return precentStartThumb
+    }
+
+    sliderThumb.on("mousedown", function (event){
+        let sliderLineCoords = getCoords(sliderLine);
+        let sliderThumbCoords = getCoords(sliderThumb);
+        let shiftClick = differenceClickAndStartThumb(event, sliderThumbCoords, orientation);
+
+        $(document).on("mousemove", function (event) {  
+            
+            // на скольких процентах от ширины линии находится ползунок
+            let precentStartThumb = coordsThumbPrecent(event, shiftClick, sliderLineCoords);
 
             //сколько процентов в линии останется для движения за вычетом процента ползунка от линии
             let withPrecent;
-            if(type === 'horizontal') {
+            if(orientation === 'horizontal') {
                 withPrecent = 100 - (sliderThumbCoords.width / sliderLineCoords.width * 100);
             }
     
-            if(type === 'vertical') {
+            if(orientation === 'vertical') {
                 withPrecent = 100 - (sliderThumbCoords.height / sliderLineCoords.height * 100);
             }
             
@@ -85,10 +96,10 @@ export function slider29(type){
             if (stepLeft < 0) stepLeft = 0;
             if (stepLeft > withPrecent) stepLeft = withPrecent;
 
-            if(type === 'horizontal') {
+            if(orientation === 'horizontal') {
                 sliderThumb.css({ left: stepLeft + "%" });
             }
-            if(type === 'vertical') {
+            if(orientation === 'vertical') {
                 sliderThumb.css({ top: stepLeft + "%" });
             }      
 
