@@ -59,7 +59,6 @@ body {
 
 .slider29__thumb--max {
     left: 50%;
-    width: 50px;
 }
 
 .slider29__thumb--vertical {
@@ -129,4 +128,12 @@ body {
     transform: translateX(0);
     top: 50%;
     transform: translateY(-50%);
+}
+
+.slider29__sidebar {
+    display: block;
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    background-color: #41d63c;
 }

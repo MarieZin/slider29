@@ -1,7 +1,7 @@
 function slider29(orientation, type, input, ruler){
-
     let slider = $(".slider29");
     let sliderLine = createSliderLine();
+    let sidebar = createSidebar();
     let inputsLine;
     let thumbs = [];
     let inputs = [];
@@ -16,7 +16,7 @@ function slider29(orientation, type, input, ruler){
     function createSliderLine(){
         let line = $('<div>', {class: 'slider29__line'});
         slider.append(line);
-        return line
+        return line;
     }
 
     //генератор кнопки
@@ -25,6 +25,14 @@ function slider29(orientation, type, input, ruler){
         thumb.addClass('slider29__thumb')
         sliderLine.append(thumb);
         return thumb;
+    }
+
+    //генератор сайдбара
+    function createSidebar(){
+        let sidebar = $('<span>');
+        sidebar.addClass('slider29__sidebar')
+        sliderLine.append(sidebar);
+        return sidebar;
     }
 
     //генератор инпута
@@ -182,7 +190,7 @@ function slider29(orientation, type, input, ruler){
                 precentStartThumb = ((event.pageX - shiftClick - sliderLineCoords.left) / sliderLineCoords.width) * 100;
             }
             if(orientation === 'vertical') {
-                precentStartThumb = ((event.pageY - shiftClick - sliderLineCoords.top) / (sliderLineCoords.height)) * 100;
+                precentStartThumb = ((event.pageY - shiftClick - sliderLineCoords.top) / sliderLineCoords.height) * 100;
             }
             if (precentStartThumb < 0) precentStartThumb = 0;
             if (precentStartThumb > 100) precentStartThumb = 100;
@@ -205,6 +213,9 @@ function slider29(orientation, type, input, ruler){
             //текущая кнопка
             let currenThumb = $(event.target);
 
+            //на скольких процентах сейчас находится кнопка макисмума
+            const maxThumbPrecentStart = (maxThumbCoords.left - lineThumbCoords.left) / lineThumbCoords.width * 100;
+
             //получить смещение клика
             let shiftThumbCoords = differenceClickAndStartThumb(currentThumbCoords);
 
@@ -218,13 +229,16 @@ function slider29(orientation, type, input, ruler){
                 withPrecent = 100 - (currentThumbCoords.height / lineThumbCoords.height * 100);
             }
 
+            //сколько процентов будет в одном шаге
+            let stepPercent = withPrecent / stepCount;
+
+
             $(document).on("mousemove", function (event) {
-                // на скольких процентах от ширины линии находится ползунок
+                // на скольких процентах от ширины линии находится курсор
                 let precentStartThumb = coordsThumbPrecent(event, shiftThumbCoords, lineThumbCoords);
                 
-                //сколько процентов будет в одном шаге
-                let stepPercent = withPrecent / stepCount;
-
+                
+                //прировнять процент смещения к шагу
                 let stepLeft = Math.round(precentStartThumb / stepPercent) * stepPercent;
 
                 if (stepLeft < 0) stepLeft = 0;
@@ -236,6 +250,12 @@ function slider29(orientation, type, input, ruler){
                 if(orientation === 'vertical') {
                     currenThumb.css({ top: stepLeft + "%" });
                 } 
+
+                //положение сайдбара
+                sidebar.css({
+                    left: thumbs[0].css('left') + (minThumbCoords.width / 2),
+                    width: parseInt($(thumbs[1]).css('left')) - parseInt(thumbs[0].css('left')) + 'px',
+                });
             })
 
             $(document).on("mouseup", function () {
