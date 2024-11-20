@@ -1,18 +1,16 @@
-function slider29(orientation, type, input, ruler, iconValue){
+function slider29(orientation, type, ruler, iconValue){
     let slider = $(".slider29");
     let sliderLine = createSliderLine();
-    let sliderLinePxelSize = sliderLine.outerWidth();
-    let sidebar = createSidebar();
-    let inputsLine;
+    let sliderLinePixelSize = sliderLine.outerWidth();
+    let progressbar = createProgressbar();
     let thumbs = [];
-    let inputs = [];
     const minValue = 0;
     const maxValue = 1000;
     const stepValue = 50;
     let stepCount = (maxValue - minValue) / stepValue;
     const setMinValue = 300;
     const setMaxValue = 600;
-    let valuesLine;
+    let minMaxvaluesLine;
     let rulerElem;
     //сколько есть процентов для движения в линии за вычетом ширины ползунка
     let withPrecent;
@@ -34,18 +32,12 @@ function slider29(orientation, type, input, ruler, iconValue){
         return thumb;
     }
 
-    //генератор сайдбара
-    function createSidebar(){
-        let sidebar = $('<span>');
-        sidebar.addClass('slider29__sidebar')
-        sliderLine.append(sidebar);
-        return sidebar;
-    }
-
-    //генератор инпута
-    function createInput() {
-        let input = ($('<input>', {class: 'slider29__input'})); 
-        return input;
+    //генератор прогрессбара
+    function createProgressbar(){
+        let progressbar = $('<span>');
+        progressbar.addClass('slider29__progressbar')
+        sliderLine.append(progressbar);
+        return progressbar;
     }
 
     // генератор вертикальной ориентации
@@ -62,7 +54,7 @@ function slider29(orientation, type, input, ruler, iconValue){
         });
 
         //повернем линию со значениями
-        valuesLine.addClass('slider29__values--vertical');
+        minMaxvaluesLine.addClass('slider29__values--vertical');
         
         //повернем линейку если она есть
         if(ruler) {
@@ -73,7 +65,7 @@ function slider29(orientation, type, input, ruler, iconValue){
         }
     }
 
-    //генератор мин и макс
+    //генератор линейки мин и макс
     function showMinMaxValue(){
         const valuesHtml = `
             <div class="slider29__values">
@@ -82,7 +74,7 @@ function slider29(orientation, type, input, ruler, iconValue){
             </div>
         `
         slider.prepend(valuesHtml);
-        valuesLine = $('.slider29__values');
+        minMaxvaluesLine = $('.slider29__values');
     }
 
     // генератор линейки
@@ -99,11 +91,6 @@ function slider29(orientation, type, input, ruler, iconValue){
         }
 
         slider.append(rulerElem)
-    }
-
-    //генератор флажка
-    function createPin(){
-        
     }
 
     //генератор координат элементов
@@ -127,15 +114,15 @@ function slider29(orientation, type, input, ruler, iconValue){
 
     //получить из заданной единицы смещение в процентах
     function getPrecentFromUnits(units) {
-        return ((sliderLinePxelSize - thumbs[0].width()) / maxValue * units) / sliderLinePxelSize * 100 + "%";
+        return ((sliderLinePixelSize - thumbs[0].width()) / maxValue * units) / sliderLinePixelSize * 100 + "%";
     }
 
     // генератор размера сайдбара
-    function setSidebar(){
+    function setProgressbar(){
         if(type === 'single') {
             if(orientation === 'vertical') {
                 let coordsThumbStart = parseInt(thumbs[0].css('top')) + (thumbs[0].height() / 2) + 'px';
-                sidebar.css({
+                progressbar.css({
                     top: 0,
                     width: '100%',
                     height: coordsThumbStart,
@@ -144,7 +131,7 @@ function slider29(orientation, type, input, ruler, iconValue){
 
             if(orientation === 'horizontal') {
                 let coordsThumbStart = parseInt(thumbs[0].css('left')) + (thumbs[0].width() / 2) + 'px';
-                sidebar.css({
+                progressbar.css({
                     left: 0,
                     height: '100%',
                     width: coordsThumbStart,
@@ -157,7 +144,7 @@ function slider29(orientation, type, input, ruler, iconValue){
                 let coordsThumbMin = parseInt(thumbs[0].css('top')) + (thumbs[0].height() / 2);
                 let coordsThumbMax = parseInt(thumbs[1].css('top')) + (thumbs[1].height() / 2);
 
-                sidebar.css({
+                progressbar.css({
                     left: 0,
                     height: coordsThumbMax - coordsThumbMin + 'px',
                     width: '100%',
@@ -169,7 +156,7 @@ function slider29(orientation, type, input, ruler, iconValue){
                 let coordsThumbMin = parseInt(thumbs[0].css('left')) + (thumbs[0].width() / 2);
                 let coordsThumbMax = parseInt(thumbs[1].css('left')) + (thumbs[1].width() / 2);
 
-                sidebar.css({
+                progressbar.css({
                     left: coordsThumbMin + 'px',
                     height: '100%',
                     width: coordsThumbMax - coordsThumbMin + 'px',
@@ -193,30 +180,6 @@ function slider29(orientation, type, input, ruler, iconValue){
         //показать мин и макс на слайдере
         {
             showMinMaxValue()
-        }
-
-        // если заказаны инпуты, то создать в соответствии с количеством позунков
-        {
-            if(input) {
-                // создать оболочку для инпут
-                inputsLine = $('<div>', {class: "slider29__inputs"});
-                slider.prepend(inputsLine);
-
-                if(type === 'double') {
-                    const inputMin = createInput().addClass('slider29__input--min')
-                    inputs.push(inputMin);
-                    inputsLine.append(inputMin);
-
-                    const inputMax = createInput().addClass('slider29__input--max')
-                    inputs.push(inputMax);
-                    inputsLine.append(inputMax);
-
-                } else {
-                    const input = createInput();
-                    inputs.push(input);
-                    inputsLine.append(input);
-                }
-            }
         }
 
         // если нужна линейка, добавить линейку 
@@ -281,7 +244,7 @@ function slider29(orientation, type, input, ruler, iconValue){
         }
 
         //создать сайдбар
-        setSidebar()
+        setProgressbar()
     } 
     
 // --------------------------------------------------------------------------------------
@@ -325,14 +288,14 @@ function slider29(orientation, type, input, ruler, iconValue){
                 let pixelClick = event.clientX - sliderLineCoords.left;
 
                 //на скольких процентах от линии произошел клик
-                let pixelClickPrecent= pixelClick / sliderLinePxelSize * 100;
+                let pixelClickPrecent= pixelClick / sliderLinePixelSize * 100;
 
                 //прировнять проценты клика к шагу
                 let stepLeft = Math.round(pixelClickPrecent / stepPercent) * stepPercent;
 
                 if(type === 'single') {
                     thumbs[0].css({ left: stepLeft + "%" });
-                    setSidebar();
+                    setProgressbar();
                 }
                 if(type === 'double') {
                     const minPrecent = parseInt(document.querySelector('.slider29__thumb--min').style.left);
@@ -344,7 +307,7 @@ function slider29(orientation, type, input, ruler, iconValue){
                     } else {
                         thumbs[1].css({ left: stepLeft + "%" });
                     }
-                    setSidebar();
+                    setProgressbar();
                 }
             }
             
@@ -354,14 +317,14 @@ function slider29(orientation, type, input, ruler, iconValue){
                 console.log(sliderLineCoords.top)
 
                 //на скольких процентах от линии произошел клик
-                let pixelClickPrecent= pixelClick / sliderLinePxelSize * 100;
+                let pixelClickPrecent= pixelClick / sliderLinePixelSize * 100;
 
                 //прировнять проценты клика к шагу
                 let stepTop = Math.round(pixelClickPrecent / stepPercent) * stepPercent;
 
                 if(type === 'single') {
                     thumbs[0].css({ top: stepTop + "%" });
-                    setSidebar();
+                    setProgressbar();
                 }
 
                 if(type === 'double') {
@@ -374,7 +337,7 @@ function slider29(orientation, type, input, ruler, iconValue){
                     } else {
                         thumbs[1].css({ top: stepTop + "%" });
                     }
-                    setSidebar();
+                    setProgressbar();
                 }
 
             }
@@ -387,13 +350,13 @@ function slider29(orientation, type, input, ruler, iconValue){
                 if(orientation === 'horizontal') {
                     if(type === 'single') {
                         thumbs[0].css({ left: getPrecentFromUnits(this.textContent)});
-                        setSidebar();
+                        setProgressbar();
                     }
                 }
                 if(orientation === 'vertical') {
                     if(type === 'single') {
                         thumbs[0].css({ top: getPrecentFromUnits(this.textContent)});
-                        setSidebar();
+                        setProgressbar();
                     }
                 }
             })
@@ -417,22 +380,22 @@ function slider29(orientation, type, input, ruler, iconValue){
             let maxThumbPrecentStart;
             if(orientation === 'horizontal') {
                 if (maxThumbCoords) {
-                    maxThumbPrecentStart = (maxThumbCoords.left - lineThumbCoords.left) / sliderLinePxelSize * 100;
+                    maxThumbPrecentStart = (maxThumbCoords.left - lineThumbCoords.left) / sliderLinePixelSize * 100;
                 }
             }
             if(orientation === 'vertical') {
                 if (maxThumbCoords) {
-                    maxThumbPrecentStart = (maxThumbCoords.top - lineThumbCoords.top) / sliderLinePxelSize * 100;
+                    maxThumbPrecentStart = (maxThumbCoords.top - lineThumbCoords.top) / sliderLinePixelSize * 100;
                 }
             }
 
             //на скольких процентах сейчас находится кнопка минимума
             let minThumbPrecentStart
             if(orientation === 'horizontal') {
-                minThumbPrecentStart = (minThumbCoords.left - lineThumbCoords.left) / sliderLinePxelSize * 100;
+                minThumbPrecentStart = (minThumbCoords.left - lineThumbCoords.left) / sliderLinePixelSize * 100;
             }
             if(orientation === 'vertical') {
-                minThumbPrecentStart = (minThumbCoords.top - lineThumbCoords.top) / sliderLinePxelSize * 100;
+                minThumbPrecentStart = (minThumbCoords.top - lineThumbCoords.top) / sliderLinePixelSize * 100;
             }
 
             //получить смещение клика
@@ -468,7 +431,7 @@ function slider29(orientation, type, input, ruler, iconValue){
                 } 
 
                 //обновить сайдбар
-                setSidebar()
+                setProgressbar()
 
                 //получить значение слайдера
                 function getValue(){
@@ -494,8 +457,7 @@ function slider29(orientation, type, input, ruler, iconValue){
 
 // orientation : 'horizontal' / 'vertical' 
 // type: 'single' / 'double'
-// input: true /false
 // ruler: true / false
 // icon-value: true / false
 
-slider29('vertical', 'single', false, true, true);
+slider29('horizontal', 'single', true, true);
