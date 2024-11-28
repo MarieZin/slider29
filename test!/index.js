@@ -243,7 +243,7 @@ function slider29(orientation, type, ruler, iconValue){
             }
         }
 
-        //создать сайдбар
+        //создать прогрессбар
         setProgressbar()
     } 
     
